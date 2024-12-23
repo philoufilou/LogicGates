@@ -1,6 +1,7 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    id "com.github.johnrengelman.shadow" version "8.1.1" apply false
 }
 
 architectury {
@@ -9,6 +10,7 @@ architectury {
 
 subprojects {
     apply plugin: "dev.architectury.loom"
+    apply plugin: "com.github.johnrengelman.shadow"
 
     loom {
         silentMojangMappingsLicense()
