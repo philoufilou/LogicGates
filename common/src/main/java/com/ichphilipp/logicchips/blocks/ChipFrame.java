@@ -23,6 +23,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DiodeBlock;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -31,7 +33,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ChipFrame extends DiodeBlock {
+public class ChipFrame extends DiodeBlock implements EntityBlock {
 
     public static final EnumProperty<ChipType> TYPE = EnumProperty.create("type", ChipType.class);
     public static final BooleanProperty LEFT_INPUT = BooleanProperty.create("left");
@@ -252,5 +254,10 @@ public class ChipFrame extends DiodeBlock {
             z += (scale * direction.getStepZ());
         }
         level.addParticle(DustParticleOptions.REDSTONE, x, y, z, 0.0D, 0.0D, 0.0D);
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new ChipFrameEntity(blockPos, blockState);
     }
 }
