@@ -43,7 +43,7 @@ public class LogicChipsBlock<T extends Block> implements Supplier<T> {
         if (ALL.containsKey(name)) {
             throw new IllegalArgumentException("already registered");
         }
-        this.block = RegistryMgr.registerBlock(this.name, template);
+        this.block = RegistryMgr.BLOCK.register(this.name, template);
         this.item = RegistryMgr.registerBlockItem(this.name, this.block);
         ALL.put(this.name, this);
     }

@@ -1,5 +1,6 @@
 package com.ichphilipp.logicchips;
 
+import com.ichphilipp.logicchips.blocks.ChipFrameEntity;
 import com.ichphilipp.logicchips.blocks.LogicChipsBlock;
 import com.ichphilipp.logicchips.items.LogicChipsItem;
 import com.ichphilipp.logicchips.utils.RegistryMgr;
@@ -27,12 +28,20 @@ public class LogicChips {
     public static final Item.Properties DEFAULT_ITEM_PROP = new Item.Properties().arch$tab(TAB);
     public static final Item.Properties DEFAULT_CHIP_PROP = new Item.Properties().arch$tab(TAB).stacksTo(16);
 
-    private LogicChips() {}
+    private LogicChips() {
+    }
 
     public static void init() {
-        LogicChipsBlock.getAll();
-        LogicChipsItem.getAll(); //trigger initialization
-        RegistryMgr.init();
+        RegistryMgr.TABS.register();
+
+        LogicChipsBlock.getAll();//trigger initialization
+        RegistryMgr.BLOCK.register();
+
+        LogicChipsItem.getAll();
+        RegistryMgr.ITEM.register();
+
+        ChipFrameEntity.TYPE.isPresent();
+        RegistryMgr.BLOCK_ENTITY_TYPE.register();
     }
 
     public static ResourceLocation rl(@NotNull String path) {

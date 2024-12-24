@@ -14,11 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ChipFrameEntity extends BlockEntity {
     public int dynamicLogics = 0;
 
-    public static final RegistrySupplier<BlockEntityType<ChipFrameEntity>> TYPE = RegistryMgr.registerBE(
-        "chip_frame",
-        ChipFrameEntity::new,
-        LogicChipsBlock.GATE_FRAME.get()
-    );
+    public static final RegistrySupplier<BlockEntityType<ChipFrameEntity>> TYPE = RegistryMgr
+        .registerBE(LogicChipsBlock.GATE_FRAME.block, ChipFrameEntity::new);
 
     public ChipFrameEntity(
         BlockPos blockPos,
