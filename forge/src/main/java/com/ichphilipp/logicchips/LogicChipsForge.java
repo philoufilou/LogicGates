@@ -14,7 +14,5 @@ public class LogicChipsForge {
         EventBuses.registerModEventBus(LogicChips.MOD_ID, eventBus);
 
         LogicChips.init();
-
-        MinecraftForge.EVENT_BUS.register(this);
     }
 }

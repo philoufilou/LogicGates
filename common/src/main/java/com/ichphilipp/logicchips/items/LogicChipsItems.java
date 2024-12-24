@@ -6,7 +6,6 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 

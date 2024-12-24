@@ -129,13 +129,7 @@ public class ChipFrame extends DiodeBlock {
                 .setValue(RIGHT_INPUT, signalRight)
                 .setValue(BOTTOM_INPUT, signalMid)
         );
-        if (type.logic == null) {
-            return BitWiseUtil.get(
-                blockstate.getValue(LOGIC),
-                BitWiseUtil.wrap(signalLeft, signalMid, signalRight)
-            );
-        }
-        return type.logic.apply(signalLeft, signalMid, signalRight);
+        return type.applyLogic(blockstate, signalLeft, signalMid, signalRight);
     }
 
     public void dropChip(Level world, BlockPos blockPos, BlockState blockState) {

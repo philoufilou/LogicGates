@@ -18,22 +18,15 @@ public class RegistryMgr {
 
     public static final Map<String, LogicChipsBlock> BLOCKS = new HashMap<>();
 
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(
-        LogicChips.MOD_ID, Registries.CREATIVE_MODE_TAB
-    );
-    public static final DeferredRegister<Item> ITEM_REG = DeferredRegister.create(
-        LogicChips.MOD_ID, Registries.ITEM
-    );
-    public static final DeferredRegister<Block> BLOCK_REG = DeferredRegister.create(
-        LogicChips.MOD_ID, Registries.BLOCK
-    );
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister
+        .create(LogicChips.MOD_ID, Registries.CREATIVE_MODE_TAB);
+    public static final DeferredRegister<Item> ITEM_REG = DeferredRegister
+        .create(LogicChips.MOD_ID, Registries.ITEM);
+    public static final DeferredRegister<Block> BLOCK_REG = DeferredRegister
+        .create(LogicChips.MOD_ID, Registries.BLOCK);
 
     public static <T extends Item> RegistrySupplier<T> registerItem(String name, Supplier<T> item) {
         return ITEM_REG.register(name, item);
-    }
-
-    public static RegistrySupplier<Item> registerItem(String name) {
-        return registerItem(name, () -> new Item(LogicChips.DEFAULT_ITEM_PROP));
     }
 
     public static <T extends Block> RegistrySupplier<T> registerBlock(String name, Supplier<T> block) {
