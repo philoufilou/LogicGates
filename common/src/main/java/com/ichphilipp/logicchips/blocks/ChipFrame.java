@@ -2,7 +2,7 @@ package com.ichphilipp.logicchips.blocks;
 
 import com.ichphilipp.logicchips.items.Chip;
 import com.ichphilipp.logicchips.items.DynamicChip;
-import com.ichphilipp.logicchips.items.LogicChipsItems;
+import com.ichphilipp.logicchips.items.LogicChipsItem;
 import com.ichphilipp.logicchips.items.ChipType;
 
 import com.ichphilipp.logicchips.utils.BitWiseUtil;
@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,10 +37,6 @@ public class ChipFrame extends DiodeBlock {
     public static final BooleanProperty LEFT_INPUT = BooleanProperty.create("left");
     public static final BooleanProperty RIGHT_INPUT = BooleanProperty.create("right");
     public static final BooleanProperty BOTTOM_INPUT = BooleanProperty.create("bottom");
-    /**
-     * dont use {@link Integer#MAX_VALUE} as max, it will make your java heap space explode
-     */
-    public static final IntegerProperty LOGIC = IntegerProperty.create("logic", 0, (int) Math.pow(2, 8));
 
     public ChipFrame(Properties properties) {
         super(properties);
@@ -53,7 +48,6 @@ public class ChipFrame extends DiodeBlock {
                 .setValue(RIGHT_INPUT, false)
                 .setValue(BOTTOM_INPUT, false)
                 .setValue(POWERED, false)
-                .setValue(LOGIC, 0)
         );
     }
 
@@ -64,7 +58,7 @@ public class ChipFrame extends DiodeBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> arg) {
-        arg.add(FACING, TYPE, POWERED, LEFT_INPUT, RIGHT_INPUT, BOTTOM_INPUT, LOGIC);
+        arg.add(FACING, TYPE, POWERED, LEFT_INPUT, RIGHT_INPUT, BOTTOM_INPUT);
     }
 
     /**
@@ -129,38 +123,50 @@ public class ChipFrame extends DiodeBlock {
                 .setValue(RIGHT_INPUT, signalRight)
                 .setValue(BOTTOM_INPUT, signalMid)
         );
-        return type.applyLogic(blockstate, signalLeft, signalMid, signalRight);
+        if (type.logic == null) {
+            if (world.getBlockEntity(pos) instanceof ChipFrameEntity entity) {
+                return BitWiseUtil.get(
+                    entity.dynamicLogics,
+                    BitWiseUtil.wrap(signalLeft, signalMid, signalRight)
+                );
+            }
+            return false;
+        }
+        return type.logic.apply(signalLeft, signalMid, signalRight);
     }
 
-    public void dropChip(Level world, BlockPos blockPos, BlockState blockState) {
+    public void dropChip(Level world, BlockPos pos, BlockState blockState) {
         val type = blockState.getValue(TYPE);
         if (type == ChipType.empty) {
             return;
         }
         Containers.dropItemStack(
             world,
-            blockPos.getX(),
-            blockPos.getY(),
-            blockPos.getZ(),
-            computeStackForDrop(blockState)
+            pos.getX(),
+            pos.getY(),
+            pos.getZ(),
+            computeStackForDrop(world, pos, blockState)
         );
-        this.updateNeighborsInFront(world, blockPos, blockState);
+        this.updateNeighborsInFront(world, pos, blockState);
     }
 
-    private static ItemStack computeStackForDrop(BlockState blockState) {
+    private static ItemStack computeStackForDrop(Level world, BlockPos pos, BlockState blockState) {
         val type = blockState.getValue(TYPE);
         if (type == ChipType.dynamic) {
-            final int logic = blockState.getValue(LOGIC);
-            val builder = new StringBuilder(DynamicChip.LOGIC_BITS_SIZE);
-            for (int i = 0; i < DynamicChip.LOGIC_BITS_SIZE; i++) {
-                builder.append(BitWiseUtil.get(logic, i) ? '1' : '0');
-            }
-            return LogicChipsItems.DYNAMIC.get()
+            val stack = LogicChipsItem.DYNAMIC.get()
                 .getDefaultInstance()
-                .copyWithCount(1)
-                .setHoverName(Component.literal(builder.toString()));
+                .copyWithCount(1);
+            if (world.getBlockEntity(pos) instanceof ChipFrameEntity entity) {
+                val builder = new StringBuilder(DynamicChip.LOGIC_BITS_SIZE);
+                val logic = entity.dynamicLogics;
+                for (int i = 0; i < DynamicChip.LOGIC_BITS_SIZE; i++) {
+                    builder.append(BitWiseUtil.get(logic, i) ? '1' : '0');
+                }
+                stack.setHoverName(Component.literal(builder.toString()));
+            }
+            return stack;
         }
-        return LogicChipsItems.getAll()
+        return LogicChipsItem.getAll()
             .get(type.toChipName())
             .get()
             .getDefaultInstance()
@@ -187,20 +193,21 @@ public class ChipFrame extends DiodeBlock {
             if (!isClientSide) {
                 val newType = ((Chip) handitem).type;
 
-                BlockState newBlockstate = blockState;
-                if (newType == ChipType.dynamic) {
+                if (newType == ChipType.dynamic
+                    && world.getBlockEntity(blockPos) instanceof ChipFrameEntity entity) {
                     val logicRaw = DynamicChip.readLogicFromName(stack.getHoverName());
                     if (logicRaw == null) {
                         return InteractionResult.PASS;
                     }
-                    newBlockstate = blockState.setValue(LOGIC, BitWiseUtil.wrap(logicRaw));
+                    entity.dynamicLogics = BitWiseUtil.wrap(logicRaw);
+                    entity.setChanged();
                 }
 
                 world.setBlock(
                     blockPos,
-                    newBlockstate
+                    blockState
                         .setValue(TYPE, newType)
-                        .setValue(POWERED, this.isPowered(newBlockstate, world, blockPos)),
+                        .setValue(POWERED, this.isPowered(blockState, world, blockPos)),
                     3
                 );
                 if (instabuild) {

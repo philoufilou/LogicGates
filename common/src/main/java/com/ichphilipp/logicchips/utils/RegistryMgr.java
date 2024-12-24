@@ -63,5 +63,6 @@ public class RegistryMgr {
         TABS.register();
         ITEM_REG.register();
         BLOCK_REG.register();
+        BE_TYPE_REG.register();
     }
 }

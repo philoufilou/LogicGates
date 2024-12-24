@@ -7,19 +7,30 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Supplier;
 
-public enum LogicChipsBlock implements Supplier<Block> {
-    //TODO: check if using repeater's prop is a good idea
-    GATE_FRAME(() -> new ChipFrame(BlockBehaviour.Properties.copy(Blocks.REPEATER)));
+public class LogicChipsBlock<T extends Block> implements Supplier<T> {
+    private static final Map<String, LogicChipsBlock<?>> ALL = new LinkedHashMap<>();
+
+    public static final LogicChipsBlock<ChipFrame> GATE_FRAME = new LogicChipsBlock<>(
+        "gate_frame",
+        () -> new ChipFrame(BlockBehaviour.Properties.copy(Blocks.REPEATER))
+    );
+
+    public static Map<String, LogicChipsBlock<?>> getAll() {
+        return Collections.unmodifiableMap(ALL);
+    }
 
     public final String name;
-    public final RegistrySupplier<Block> block;
+    public final RegistrySupplier<T> block;
     public final RegistrySupplier<BlockItem> item;
 
     @Override
-    public Block get() {
+    public T get() {
         return this.block.get();
     }
 
@@ -27,15 +38,13 @@ public enum LogicChipsBlock implements Supplier<Block> {
         return this.item;
     }
 
-    LogicChipsBlock(Supplier<Block> template) {
-        this.name = this.name().toLowerCase(Locale.ROOT);
+    private LogicChipsBlock(String name, Supplier<T> template) {
+        this.name = name.toLowerCase(Locale.ROOT);
+        if (ALL.containsKey(name)) {
+            throw new IllegalArgumentException("already registered");
+        }
         this.block = RegistryMgr.registerBlock(this.name, template);
         this.item = RegistryMgr.registerBlockItem(this.name, this.block);
-    }
-
-    public static void init() {
-        for (LogicChipsBlock block : LogicChipsBlock.values()) {
-            RegistryMgr.BLOCKS.put(block.name, block);
-        }
+        ALL.put(this.name, this);
     }
 }

@@ -1,11 +1,8 @@
 package com.ichphilipp.logicchips.items;
 
 import com.ichphilipp.logicchips.api.TriBoolLogic;
-import com.ichphilipp.logicchips.blocks.ChipFrame;
-import com.ichphilipp.logicchips.utils.BitWiseUtil;
 import lombok.val;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,21 +40,6 @@ public enum ChipType implements StringRepresentable {
         canConnectLeft = canConnect == 2 || canConnect == 3;
         canConnectRight = canConnect == 2 || canConnect == 3;
         canConnectMid = canConnect == 1 || canConnect == 3;
-    }
-
-    public boolean applyLogic(
-        @NotNull BlockState blockstate,
-        boolean signalLeft,
-        boolean signalMid,
-        boolean signalRight
-    ) {
-        if (logic == null) {
-            return BitWiseUtil.get(
-                blockstate.getValue(ChipFrame.LOGIC),
-                BitWiseUtil.wrap(signalLeft, signalMid, signalRight)
-            );
-        }
-        return logic.apply(signalLeft, signalMid, signalRight);
     }
 
     @Override

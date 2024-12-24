@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * @author ZZZank
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LogicChipsItems {
+public final class LogicChipsItem {
 
     private static final Map<String, RegistrySupplier<? extends Item>> ALL = new LinkedHashMap<>();
     public static final RegistrySupplier<Item> CHIP = register("chip");
@@ -54,7 +54,7 @@ public final class LogicChipsItems {
         return registerImpl(chipType.toChipName(), () -> new Chip(chipType));
     }
 
-    private static <T extends Item> RegistrySupplier<T> registerImpl(
+    static <T extends Item> RegistrySupplier<T> registerImpl(
         @NotNull String name,
         @NotNull Supplier<T> supplier
     ) {
