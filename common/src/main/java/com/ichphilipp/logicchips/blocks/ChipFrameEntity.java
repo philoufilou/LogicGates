@@ -29,7 +29,6 @@ public class ChipFrameEntity extends BlockEntity {
 
     @Override
     public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
         dynamicLogics = compoundTag.getInt("dyna");
     }
 

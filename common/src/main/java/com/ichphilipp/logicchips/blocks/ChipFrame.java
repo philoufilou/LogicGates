@@ -97,42 +97,38 @@ public class ChipFrame extends DiodeBlock {
         }
     }
 
-    // public void wasExploded(Level world, BlockPos pos, Explosion explosion) {
-    //     // We don't need this to get our chip back when exploded because onRemove() already did this
-    //     // Tested on Forge36.2.41
-    // }
-
     public boolean isPowered(@NotNull BlockState blockstate, Level world, @NotNull BlockPos pos) {
         val facing = blockstate.getValue(FACING);
         val type = blockstate.getValue(TYPE);
-        val signalRight = 0 != world.getControlInputSignal(
-            pos.relative(facing.getCounterClockWise()),
-            facing.getCounterClockWise(),
-            this.sideInputDiodesOnly()
-        );
-        val signalMid = 0 != world.getControlInputSignal(pos.relative(facing), facing, this.sideInputDiodesOnly());
-        val signalLeft = 0 != world.getControlInputSignal(
-            pos.relative(facing.getClockWise()),
-            facing.getClockWise(),
-            this.sideInputDiodesOnly()
-        );
+
+        val signalR = 0 != getFaceSignal(world, pos, facing.getCounterClockWise());
+        val signalM = 0 != getFaceSignal(world, pos, facing);
+        val signalL = 0 != getFaceSignal(world, pos, facing.getClockWise());
 
         world.setBlockAndUpdate(
             pos,
-            blockstate.setValue(LEFT_INPUT, signalLeft)
-                .setValue(RIGHT_INPUT, signalRight)
-                .setValue(BOTTOM_INPUT, signalMid)
+            blockstate.setValue(LEFT_INPUT, signalL)
+                .setValue(RIGHT_INPUT, signalR)
+                .setValue(BOTTOM_INPUT, signalM)
         );
         if (type.logic == null) {
             if (world.getBlockEntity(pos) instanceof ChipFrameEntity entity) {
                 return BitWiseUtil.get(
                     entity.dynamicLogics,
-                    BitWiseUtil.wrap(signalLeft, signalMid, signalRight)
+                    BitWiseUtil.wrap(signalL, signalM, signalR)
                 );
             }
             return false;
         }
-        return type.logic.apply(signalLeft, signalMid, signalRight);
+        return type.logic.apply(signalL, signalM, signalR);
+    }
+
+    private int getFaceSignal(Level world, @NotNull BlockPos pos, Direction facing) {
+        return world.getControlInputSignal(
+            pos.relative(facing),
+            facing,
+            this.sideInputDiodesOnly()
+        );
     }
 
     public void dropChip(Level world, BlockPos pos, BlockState blockState) {
