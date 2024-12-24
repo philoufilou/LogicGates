@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -60,6 +61,7 @@ public final class LogicChipsItems {
         if (name == null) {
             throw new IllegalArgumentException("item registry name should not be null");
         }
+        name = name.toLowerCase(Locale.ROOT);
         if (ALL.containsKey(name)) {
             throw new IllegalArgumentException("item registry name '" + name + "' already existed");
         }

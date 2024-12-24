@@ -7,15 +7,16 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 
 public enum LogicChipsBlock implements Supplier<Block> {
     //TODO: check if using repeater's prop is a good idea
     GATE_FRAME(() -> new ChipFrame(BlockBehaviour.Properties.copy(Blocks.REPEATER)));
 
-    private final String key;
-    private final RegistrySupplier<Block> block;
-    private final RegistrySupplier<BlockItem> item;
+    public final String name;
+    public final RegistrySupplier<Block> block;
+    public final RegistrySupplier<BlockItem> item;
 
     @Override
     public Block get() {
@@ -27,14 +28,14 @@ public enum LogicChipsBlock implements Supplier<Block> {
     }
 
     LogicChipsBlock(Supplier<Block> template) {
-        this.key = this.name().toLowerCase();
-        this.block = RegistryMgr.registerBlock(this.key, template);
-        this.item = RegistryMgr.registerBlockItem(this.key, this.block);
+        this.name = this.name().toLowerCase(Locale.ROOT);
+        this.block = RegistryMgr.registerBlock(this.name, template);
+        this.item = RegistryMgr.registerBlockItem(this.name, this.block);
     }
 
     public static void init() {
         for (LogicChipsBlock block : LogicChipsBlock.values()) {
-            RegistryMgr.BLOCKS.put(block.key, block);
+            RegistryMgr.BLOCKS.put(block.name, block);
         }
     }
 }
