@@ -1,7 +1,8 @@
 package com.ichphilipp.logicchips;
 
+import com.ichphilipp.logicchips.blocks.ChipFrameEntity;
 import com.ichphilipp.logicchips.blocks.LogicChipsBlock;
-import com.ichphilipp.logicchips.items.LogicChipsItems;
+import com.ichphilipp.logicchips.items.LogicChipsItem;
 import com.ichphilipp.logicchips.utils.RegistryMgr;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -21,18 +22,26 @@ public class LogicChips {
         "tab",
         () -> CreativeTabRegistry.create(
             Component.translatable("itemGroup.logicchips.tab"), // Tab Name
-            () -> LogicChipsItems.AND_GATE.get().getDefaultInstance()// Icon
+            () -> LogicChipsItem.AND_GATE.get().getDefaultInstance()// Icon
         )
     );
     public static final Item.Properties DEFAULT_ITEM_PROP = new Item.Properties().arch$tab(TAB);
     public static final Item.Properties DEFAULT_CHIP_PROP = new Item.Properties().arch$tab(TAB).stacksTo(16);
 
-    private LogicChips() {}
+    private LogicChips() {
+    }
 
     public static void init() {
-        LogicChipsBlock.init();
-        LogicChipsItems.getAll(); //trigger initialization
-        RegistryMgr.init();
+        RegistryMgr.TABS.register();
+
+        LogicChipsBlock.getAll();//trigger initialization
+        RegistryMgr.BLOCK.register();
+
+        LogicChipsItem.getAll();
+        RegistryMgr.ITEM.register();
+
+        ChipFrameEntity.TYPE.isPresent();
+        RegistryMgr.BLOCK_ENTITY_TYPE.register();
     }
 
     public static ResourceLocation rl(@NotNull String path) {

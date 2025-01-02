@@ -24,7 +24,7 @@ public class Chip extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag tooltipFlag) {
         val langKey = Screen.hasShiftDown()
-            ? String.format("tooltip.%s.%s", LogicChips.MOD_ID, BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath())
+            ? String.format("tooltip.%s.%s", LogicChips.MOD_ID, stack.getItem())
             : "tooltip.logicchips.shift";
         list.add(Component.translatable(langKey));
         super.appendHoverText(stack, context, list, tooltipFlag);
