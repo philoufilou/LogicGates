@@ -55,27 +55,27 @@ public class DynamicChip extends Chip {
         }
     }
 
-    private static final TextColor DARK_YELLOW = TextColor.parseColor("#404000");
-    private static final TextColor REGULAR_YELLOW = TextColor.fromLegacyFormat(ChatFormatting.YELLOW);
-    private static final TextColor DARK_AQUA = TextColor.parseColor("#004040");
-    private static final TextColor REGULAR_AQUA = TextColor.fromLegacyFormat(ChatFormatting.AQUA);
-    private static final TextColor DARK_PURPLE = TextColor.parseColor("#400040");
-    private static final TextColor REGULAR_PURPLE = TextColor.fromLegacyFormat(ChatFormatting.LIGHT_PURPLE);
-    private static final TextColor DARK_RED = TextColor.parseColor("#400000");
-    private static final TextColor REGULAR_RED = TextColor.fromLegacyFormat(ChatFormatting.RED);
+    public static final TextColor DARK_YELLOW = TextColor.parseColor("#404000");
+    public static final TextColor REGULAR_YELLOW = TextColor.fromLegacyFormat(ChatFormatting.YELLOW);
+    public static final TextColor DARK_AQUA = TextColor.parseColor("#004040");
+    public static final TextColor REGULAR_AQUA = TextColor.fromLegacyFormat(ChatFormatting.AQUA);
+    public static final TextColor DARK_PURPLE = TextColor.parseColor("#400040");
+    public static final TextColor REGULAR_PURPLE = TextColor.fromLegacyFormat(ChatFormatting.LIGHT_PURPLE);
+    public static final TextColor DARK_RED = TextColor.parseColor("#400000");
+    public static final TextColor REGULAR_RED = TextColor.fromLegacyFormat(ChatFormatting.RED);
 
     private static @NotNull MutableComponent signal(TextColor color) {
         return new TextComponent("█").setStyle(Style.EMPTY.withColor(color));
     }
 
     public static boolean @Nullable [] readLogicFromName(@NotNull Component hoverName) {
-        val string = hoverName.getString();
-        if (string.length() < LOGIC_BITS_SIZE) {
+        val name = hoverName.getString();
+        if (name.length() < LOGIC_BITS_SIZE) {
             return null;
         }
         val logics = new boolean[LOGIC_BITS_SIZE];
         for (int i = 0; i < LOGIC_BITS_SIZE; i++) {
-            val c = string.charAt(i);
+            val c = name.charAt(i);
             if (c == '0') {
                 logics[i] = false;
             } else if (c == '1') {

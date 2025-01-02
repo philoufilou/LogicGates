@@ -53,4 +53,8 @@ public enum ChipType implements StringRepresentable {
             ? typeName.substring(0, typeName.length() - "_3".length()) + "_gate_3" //or_3 -> or_gate_3
             : typeName + "_gate";
     }
+
+    public boolean isDynamic() {
+        return logic == null;
+    }
 }

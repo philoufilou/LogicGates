@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -18,10 +19,12 @@ import java.util.function.Supplier;
  * @author ZZZank
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LogicChipsItems {
+@SuppressWarnings("unused")
+public final class LogicChipsItem {
 
     private static final Map<String, RegistrySupplier<? extends Item>> ALL = new LinkedHashMap<>();
-    public static final RegistrySupplier<Item> CHIP = register("chip");
+    public static final RegistrySupplier<Item> CHIP =
+        registerImpl("chip", () -> new Item(LogicChips.DEFAULT_ITEM_PROP));
     //dual-input gate
     public static final RegistrySupplier<Chip> NOT_GATE = registerChip(ChipType.not);
     public static final RegistrySupplier<Chip> AND_GATE = registerChip(ChipType.and);
@@ -45,25 +48,19 @@ public final class LogicChipsItems {
         return Collections.unmodifiableMap(ALL);
     }
 
-    static RegistrySupplier<Item> register(@NotNull String name) {
-        return registerImpl(name, () -> new Item(LogicChips.DEFAULT_ITEM_PROP));
-    }
-
     static RegistrySupplier<Chip> registerChip(@NotNull ChipType chipType) {
         return registerImpl(chipType.toChipName(), () -> new Chip(chipType));
     }
 
-    private static <T extends Item> RegistrySupplier<T> registerImpl(
+    static <T extends Item> RegistrySupplier<T> registerImpl(
         @NotNull String name,
         @NotNull Supplier<T> supplier
     ) {
-        if (name == null) {
-            throw new IllegalArgumentException("item registry name should not be null");
-        }
+        name = name.toLowerCase(Locale.ROOT);
         if (ALL.containsKey(name)) {
             throw new IllegalArgumentException("item registry name '" + name + "' already existed");
         }
-        val registered = RegistryMgr.registerItem(name, supplier);
+        val registered = RegistryMgr.ITEM.register(name, supplier);
         ALL.put(name, registered);
         return registered;
     }
