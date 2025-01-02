@@ -20,7 +20,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -217,11 +216,11 @@ public class ChipFrame extends DiodeBlock implements EntityBlock {
                 1.0F
             );
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return sidedSuccess(level.isClientSide);
     }
 
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(
+    protected @NotNull InteractionResult useItemOn(
         ItemStack stack,
         BlockState blockState,
         Level level,
@@ -235,14 +234,14 @@ public class ChipFrame extends DiodeBlock implements EntityBlock {
 
         if (type != ChipType.empty) {
             return popChip(blockState, level, blockPos).consumesAction()
-                ? ItemInteractionResult.sidedSuccess(isClientSide)
-                : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                ? sidedSuccess(isClientSide)
+                : InteractionResult.PASS;
         }
 
         return insertChip(stack, blockState, level, blockPos, isClientSide);
     }
 
-    private @NotNull ItemInteractionResult insertChip(
+    private @NotNull InteractionResult insertChip(
         ItemStack toInsert,
         BlockState blockState,
         Level level,
@@ -250,7 +249,7 @@ public class ChipFrame extends DiodeBlock implements EntityBlock {
         boolean isClient
     ) {
         if (!(toInsert.getItem() instanceof Chip chip)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS;
         }
         if (!isClient) {
             val newType = chip.type;
@@ -259,7 +258,7 @@ public class ChipFrame extends DiodeBlock implements EntityBlock {
                 && level.getBlockEntity(pos) instanceof ChipFrameEntity frame) {
                 val logicRaw = DynamicChip.readLogicFromName(toInsert.getHoverName());
                 if (logicRaw == null) {
-                    return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    return InteractionResult.PASS;
                 }
                 frame.dynamicLogics = BitWiseUtil.wrap(logicRaw);
                 frame.setChanged();
@@ -274,7 +273,7 @@ public class ChipFrame extends DiodeBlock implements EntityBlock {
             toInsert.shrink(1);
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
-        return ItemInteractionResult.sidedSuccess(isClient);
+        return sidedSuccess(isClient);
     }
 
     @Override
@@ -298,5 +297,9 @@ public class ChipFrame extends DiodeBlock implements EntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new ChipFrameEntity(blockPos, blockState);
+    }
+
+    private static InteractionResult sidedSuccess(boolean isClient) {
+        return isClient ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
 }

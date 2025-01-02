@@ -5,9 +5,7 @@ import com.ichphilipp.logicchips.LogicChips;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import lombok.val;
-import net.minecraft.Util;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -44,8 +42,7 @@ public class RegistryMgr {
             name,
             () -> new BlockEntityType<>(
                 getterBE,
-                ImmutableSet.of(block.get()),
-                Util.fetchChoiceType(References.BLOCK_ENTITY, name)
+                ImmutableSet.of(block.get())
             )
         );
     }
